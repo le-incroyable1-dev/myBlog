@@ -1,9 +1,11 @@
+from django.contrib.auth import login
 from django.shortcuts import render, redirect
 
 # import a form for creating a user
 from django.contrib.auth.forms import UserCreationForm
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm
 
 # Create your views here.
@@ -23,11 +25,16 @@ def register(request):
             username = form.cleaned_data.get('username')
 
             # uses a fstream 'f'
-            messages.success(request, f'Account created for {username}!')
+            messages.success(request, f'Hey {username}, your account was created. You can now log in!')
 
-            # redirects the user back to the blog's home page after displaying a success message
-            return redirect('myBlog-home')
+            # redirects the user to the login page after displaying a success message
+            return redirect('login')
     else:
         form = UserRegisterForm()
 
     return render(request, 'users/register.html', {'form' : form})
+
+# adds functionality that the user can't go to the profile view if they aren't logged in
+@login_required
+def profile(request):
+    return render(request, 'users/profile.html')
